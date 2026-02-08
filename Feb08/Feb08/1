@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Our Little Story 💖</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+body {
+    height: 100vh;
+    overflow: hidden;
+    background: linear-gradient(120deg, #ff5f9e, #ff7eb3, #ffc371);
+    background-size: 300% 300%;
+    animation: bgMove 12s ease infinite;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+@keyframes bgMove {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* ===== BACKGROUND SHAPES ===== */
+.shape {
+    position: absolute;
+    opacity: 0.25;
+    animation: floatShape linear infinite;
+}
+
+.circle {
+    border-radius: 50%;
+    background: rgba(255,255,255,0.6);
+}
+
+.square {
+    border-radius: 20%;
+    background: rgba(255,255,255,0.4);
+}
+
+.ring {
+    border-radius: 50%;
+    border: 6px solid rgba(255,255,255,0.5);
+    background: transparent;
+}
+
+@keyframes floatShape {
+    from { transform: translateY(120vh) rotate(0deg); }
+    to { transform: translateY(-20vh) rotate(360deg); }
+}
+
+/* ===== GLOW BLOBS ===== */
+.blob {
+    position: absolute;
+    width: 320px;
+    height: 320px;
+    background: radial-gradient(circle, rgba(255,255,255,0.35), transparent 70%);
+    filter: blur(50px);
+    animation: blobMove 14s ease-in-out infinite;
+}
+
+.blob:nth-child(1) { top: -100px; left: -100px; }
+.blob:nth-child(2) { bottom: -140px; right: -120px; animation-delay: 4s; }
+.blob:nth-child(3) { top: 30%; right: -140px; animation-delay: 7s; }
+
+@keyframes blobMove {
+    0%,100% { transform: translate(0,0); }
+    50% { transform: translate(50px,-40px); }
+}
+
+/* ===== CARD ===== */
+.card {
+    background: rgba(255,255,255,0.50);
+    padding: 10px;
+    border-radius: 26px;
+    width: 120%;
+    max-width: 700px;
+    text-align: center;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.25);
+    backdrop-filter: blur(6px);
+    z-index: 10;
+}
+
+h1, h2 {
+    color: #ff4d6d;
+    margin-bottom: 15px;
+}
+
+p {
+    color: #555;
+    font-size: 16px;
+    line-height: 1.7;
+    min-height: 90px;
+}
+
+button {
+    padding: 12px 26px;
+    font-size: 16px;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: 0.3s ease;
+    margin-top: 25px;
+}
+
+.nextBtn {
+    background: linear-gradient(135deg, #ff4d6d, #ff7eb3);
+    color: white;
+    display: none;
+}
+
+.nextBtn:hover {
+    transform: scale(1.05);
+}
+
+.buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+#yesBtn {
+    background: linear-gradient(135deg, #ff4d6d, #ff7eb3);
+    color: white;
+}
+
+#noBtn {
+    background: #eee;
+    color: #333;
+    position: relative;
+    transition: transform 0.25s ease;
+}
+
+.celebration {
+    display: none;
+    font-size: 20px;
+    color: #ff4d6d;
+    margin-top: 20px;
+}
+
+/* ===== HEARTS ===== */
+.heart {
+    position: absolute;
+    font-size: 20px;
+    animation: floatUp 6s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes floatUp {
+    0% { transform: translateY(100vh) scale(0.6); opacity: 1; }
+    100% { transform: translateY(-10vh) scale(1.2); opacity: 0; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- Glow blobs -->
+<div class="blob"></div>
+<div class="blob"></div>
+<div class="blob"></div>
+
+<!-- Floating shapes -->
+<div class="shape circle" style="width:60px;height:60px;left:10%;animation-duration:18s;"></div>
+<div class="shape square" style="width:80px;height:80px;left:70%;animation-duration:22s;"></div>
+<div class="shape ring" style="width:100px;height:100px;left:40%;animation-duration:26s;"></div>
+<div class="shape circle" style="width:40px;height:40px;left:85%;animation-duration:20s;"></div>
+<div class="shape square" style="width:55px;height:55px;left:25%;animation-duration:24s;"></div>
+
+<div class="card">
+    <h1 id="title"></h1>
+    <p id="text"></p>
+
+    <button class="nextBtn" id="nextBtn">Next →</button>
+
+    <div class="buttons" id="finalButtons" style="display:none;">
+        <button id="yesBtn">Yes 💕</button>
+        <button id="noBtn">No 🙈</button>
+    </div>
+
+    <div class="celebration" id="celebration"></div>
+</div>
+
+<script>
+const story = [
+    { title: "For my Sunnyshine... 💖", text: "Since the day I met you I've never felt incomplete...." },
+    { title: "You are that half in the whole", text: "You complete me-" },
+    { title: "You changed things you changed me ✨", text: "Days felt lighter. Smiles came easier. And now, you are my favorite thought." },
+    { title: "So Here I Am", text: "With a heart full of nothing but love… and one honest question I want to ask." },
+    { title: "Will You Be My Valentine???? 🌹", text: "", final: true }
+];
+
+let index = 0;
+const titleEl = document.getElementById("title");
+const textEl = document.getElementById("text");
+const nextBtn = document.getElementById("nextBtn");
+const finalButtons = document.getElementById("finalButtons");
+const celebration = document.getElementById("celebration");
+
+function typeText(text, callback) {
+    let i = 0;
+    textEl.innerHTML = "";
+    const interval = setInterval(() => {
+        textEl.innerHTML += text.charAt(i);
+        i++;
+        if (i >= text.length) {
+            clearInterval(interval);
+            callback();
+        }
+    }, 70); // slow romantic typing
+}
+
+function renderScene() {
+    const s = story[index];
+    titleEl.innerHTML = s.title;
+    nextBtn.style.display = "none";
+    finalButtons.style.display = "none";
+    celebration.style.display = "none";
+
+    if (!s.final) {
+        typeText(s.text, () => {
+            nextBtn.style.display = "inline-block";
+        });
+    } else {
+        textEl.innerHTML = "";
+        finalButtons.style.display = "flex";
+    }
+}
+
+nextBtn.onclick = () => {
+    index++;
+    renderScene();
+};
+
+function setupFinalButtons() {
+    const yesBtn = document.getElementById("yesBtn");
+    const noBtn = document.getElementById("noBtn");
+
+    noBtn.addEventListener("mouseenter", (e) => {
+        const r = noBtn.getBoundingClientRect();
+        const dx = (r.left + r.width / 2) - e.clientX;
+        const dy = (r.top + r.height / 2) - e.clientY;
+        const d = Math.sqrt(dx*dx + dy*dy) || 1;
+        noBtn.style.transform = `translate(${(dx/d)*120}px, ${(dy/d)*120}px)`;
+    });
+
+    yesBtn.onclick = () => {
+        finalButtons.style.display = "none";
+        celebration.style.display = "block";
+        celebration.innerHTML = `
+            Woohooooooooo!!! 🎉💖<br><br>
+            🌹 We'll pray for summer breaks<br>
+            💕 We'll love each other like crazy<br>
+            🎶 We'll keep our songs as bonding bridge as always<br>
+            💕 Just us, just us AND NO ONE ELSE
+        `;
+        launchHearts();
+    };
+}
+
+function launchHearts() {
+    for (let i = 0; i < 45; i++) {
+        const h = document.createElement("div");
+        h.className = "heart";
+        h.innerHTML = "❤️";
+        h.style.left = Math.random() * 100 + "vw";
+        h.style.animationDuration = (Math.random()*3+3) + "s";
+        document.body.appendChild(h);
+        setTimeout(() => h.remove(), 6000);
+    }
+}
+
+renderScene();
+setupFinalButtons();
+</script>
+
+</body>
+</html>
